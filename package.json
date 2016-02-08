@@ -1,0 +1,21 @@
+{
+  "name": "wsmirror",
+  "version": "0.0.1",
+  "description": "A node server that relays binary data over websockets",
+  "keywords": "node websocket server binary mirror relay",
+  "dependencies": {
+    "debug": "2.1.3",
+    "inherits": "2.0.1",
+    "merge": "1.2.0",
+    "ws": "1.0.1"
+  },
+  "devDependencies": {
+    "standard": "4.5.3"
+  },
+  "scripts": {
+    "example": "node example/index.js",
+    "test": "standard"
+  },
+  "repository": "https://github.com/common-tater/wsmirror",
+  "author": "Danny Bauman <danny@common-tater.com>"
+}
