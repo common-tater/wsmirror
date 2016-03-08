@@ -24,7 +24,7 @@ WebSocketMirror.prototype._onconnection = function (socket) {
   var action = path[1]
   if (action === 'publish') {
     this._startRecording(channel, socket)
-    socket.on('message', self._onmessage.bind(this, channel))
+    socket.on('message', this._onmessage.bind(this, channel))
   } else if (action === 'subscribe') {
     this.channels[channel] = this.channels[channel] || []
     this.channels[channel].push(socket)
