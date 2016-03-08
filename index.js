@@ -3,7 +3,6 @@ module.exports = WebSocketMirror
 var ws = require('ws')
 var inherits = require('inherits')
 var cp = require('child_process')
-var wsstream = require('websocket-stream')
 
 inherits(WebSocketMirror, ws.Server)
 
@@ -14,6 +13,7 @@ function WebSocketMirror (httpServer) {
 
   ws.Server.call(this, { server: httpServer })
   this.channels = {}
+  this._ffmpegProcs = {}
   this.on('connection', this._onconnection.bind(this))
 }
 
@@ -24,7 +24,7 @@ WebSocketMirror.prototype._onconnection = function (socket) {
   var action = path[1]
   if (action === 'publish') {
     this._startRecording(channel, socket)
-    socket.on('message', this._onmessage.bind(this, channel))
+    socket.on('message', self._onmessage.bind(this, channel))
   } else if (action === 'subscribe') {
     this.channels[channel] = this.channels[channel] || []
     this.channels[channel].push(socket)
@@ -50,11 +50,14 @@ WebSocketMirror.prototype._startRecording = function (channel, socket) {
     console.error(err)
   })
 
-  var stream = wsstream(socket)
-  stream.pipe(ffmpegProc.stdin)
+  this._ffmpegProcs[channel] = ffmpegProc
 }
 
 WebSocketMirror.prototype._onmessage = function (channel, message) {
+  if (this._ffmpegProcs[channel]) {
+    this._ffmpegProcs[channel].stdin.write(message)
+  }
+
   var subscribers = this.channels[channel]
   for (var i in subscribers) {
     try {
